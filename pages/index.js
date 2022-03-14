@@ -41,12 +41,7 @@ export default function Home() {
 
 
     const symbol = events.target.symbol.value;
-    let newInformation = { "id": 1, "symbol": "FB", "data": "{\"Previous Close\":\"195.21\",\"Open\":\"192.63\",\"Bid\":\"186.99 x 900\",\"Ask\":\"187.00 x 800\",\"Days range\":\"186.67 - 193.56\",\"52 Week range\":\"186.11 - 384.33\",\"Volume\":\"34,694,534\",\"Avg. Volume\":\"34,323,913\",\"Market Cap\":\"510.663B\",\"Beta (5Y Monthly)\":\"1.39\",\"PE Ratio (TTM)\":\"13.62\",\"EPS (TTM)\":\"13.77\",\"Earnings Date\":\"Apr 26, 2022\",\"Forward Divident & Yield\":\"N\\\/A (N\\\/A)\",\"Ex-Dividend Date\":\"N\\\/A\",\"1y Target Est\":\"326.15\",\"symbol\":\"FB\"}", "created_at": null, "updated_at": "2022-03-14T03:23:35.000000Z" }
-    newInformation = { newInformation, ...JSON.parse(newInformation.data) };
-    let newStockInfo = Object()
-    newStockInfo[symbol] = newInformation;
 
-    setStocks([...stocks, newStockInfo])
 
     fetch(`http://127.0.0.1:8000/api/stock/smartget/stocksymbol/${symbol}`).then((res) => res.json()).then((data) => {
 
@@ -58,7 +53,14 @@ export default function Home() {
       }
       if (data["stock_stat"] == "TRUE") {
 
-        console.log(data[0])
+        // console.log(
+
+        let newInformation = data[0]
+        newInformation = { newInformation, ...JSON.parse(newInformation.data) };
+        let newStockInfo = Object()
+        newStockInfo[symbol] = newInformation;
+
+        setStocks([...stocks, newStockInfo])
       }
     })
   }
