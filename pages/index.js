@@ -5,7 +5,7 @@ import React, { useState, useEffect } from 'react'
 import StockTable from '../components/StockTable'
 import SettingToggler from '../components/SettingToggler'
 import Button from '@mui/material/Button';
-import { CSVLink, CSVDownload } from "react-csv";
+import { CSVLink } from "react-csv";
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
@@ -14,24 +14,63 @@ import SelectTableToLoad from '../components/SelectTableToLoad'
 
 
 
-export default function Home({ saveTableData }) {
-  console.log(saveTableData)
+export default function Home() {
+
+
+
 
   const [stocks, setStocks] = useState([]);
   const [open, setOpen] = React.useState(false);
   const [popMessage, setPopMessage] = useState("");
+  const [tableTitle, setTableTitle] = useState("Untitled")
+  const [tablesData, setTablesData] = useState([])
+  const [settings, setSettings] = useState(
+    {
+      "1y Target Est": true,
+      "52 Week range": false,
+      "Avg. Volume": true,
+      "Beta (5Y Monthly)": true,
+      "Days range": true,
+      "EPS (TTM)": true,
+      "Earnings Date": true,
+      "Ex-Dividend Date": true,
+      "Market Cap": true,
+      "Open": true,
+      "PE Ratio (TTM)": true,
+      "Previous Close": true,
+      "Volume": true
+    }
+  );
+
 
   const openSnackBar = (message) => {
     setPopMessage(message)
     setOpen(true);
   };
 
+
+  const runInitState = () => {
+    fetch('http://127.0.0.1:8000/api/stock/save/getids').then((res) => res.json()).then((data) => {
+      setTablesData([...data]);
+    })
+  }
   const onTableSelected = (event) => {
     let tableSelectedID = event.target.value
     if (tableSelectedID > 0) {
       fetch(`http://127.0.0.1:8000/api/stock/save/load/${tableSelectedID}`).then((res) => res.json()).then((data) => {
-        console.log(data)
+        // console.log(data)
+        setSettings(data["settings"]);
+        // console.log(data["stocks"])
+        setTableTitle(data["name"])
+        // loop for each and add the stocks and add them
+        // data["stocks"].forEach(stockName => {
+        //   addStock(stockName)
+        //   setTimeout(() => { console.log("ok")}, 2000);
+
+        //   // delay(100)
+        // })
       })
+
     }
 
 
@@ -84,24 +123,6 @@ export default function Home({ saveTableData }) {
 
 
 
-  const [settings, setSettings] = useState(
-    {
-      "1y Target Est": true,
-      "52 Week range": false,
-      "Avg. Volume": true,
-      "Beta (5Y Monthly)": true,
-      "Days range": true,
-      "EPS (TTM)": true,
-      "Earnings Date": true,
-      "Ex-Dividend Date": true,
-      "Market Cap": true,
-      "Open": true,
-      "PE Ratio (TTM)": true,
-      "Previous Close": true,
-      "Volume": true
-    }
-  );
-
 
   function toggleSetting(settingName) {
     let newSetting = Object()
@@ -117,24 +138,26 @@ export default function Home({ saveTableData }) {
     ["Yezzi", "Min l3b", "ymin@cocococo.com"]
   ];
 
-  function addStock(events) {
+  function formSubmitHandle(events) {
     event.preventDefault()
 
 
     const symbol = events.target.symbol.value.toUpperCase();
 
     events.target.reset();
+    addStock(symbol)
 
 
+  }
+
+  function addStock(symbol) {
     fetch(`http://127.0.0.1:8000/api/stock/smartget/stocksymbol/${symbol}`).then((res) => res.json()).then((data) => {
 
       if (data["stock_stat"] == "FALSE") {
         openSnackBar(`hmmm... ${symbol} doesn't exists in our records, is the symbol correctly spelled?`)
-        console.log("hmmm... I don't think that symbol name is correct")
       }
       if (data["stock_stat"] == "RESEARCHING") {
         openSnackBar(`${symbol} under research, it will be available between 24 hours`)
-        console.log("Stock under research, it will be available next iteration")
       }
       if (data["stock_stat"] == "TRUE") {
         openSnackBar(`${symbol} added`)
@@ -163,6 +186,9 @@ export default function Home({ saveTableData }) {
     </React.Fragment>
   );
 
+  useEffect(() => {
+    runInitState()
+  }, [])
 
   return (
     <div className={styles.container}>
@@ -178,9 +204,9 @@ export default function Home({ saveTableData }) {
         </h1>
 
         <p className={styles.description}>
-          Untitled Save
+          {tableTitle}
         </p>
-        <form onSubmit={addStock}>
+        <form onSubmit={formSubmitHandle}>
 
           <Snackbar
             open={open}
@@ -190,7 +216,7 @@ export default function Home({ saveTableData }) {
             action={action}
           />
 
-          <SelectTableToLoad tables={saveTableData} onSelect={onTableSelected} />
+          <SelectTableToLoad tables={tablesData} onSelect={onTableSelected} />
           <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
           {
             settings && Object.keys(settings).map(setting =>
@@ -219,13 +245,3 @@ export default function Home({ saveTableData }) {
   )
 }
 
-
-export async function getStaticProps() {
-  const res = await fetch('http://127.0.0.1:8000/api/stock/save/getids')
-  const saveTableData = await res.json()
-  return {
-    props: {
-      saveTableData,
-    },
-  }
-}
