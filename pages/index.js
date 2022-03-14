@@ -27,10 +27,12 @@ export default function Home() {
     }
   );
 
-  console.log(settings)
 
   function toggleSetting(settingName) {
-    setSettings({ ...settings, "52 Week range": !settings["52 Week range"] })
+    console.log(settingName)
+    let newSetting = Object()
+    newSetting[settingName] = !settings[settingName] 
+    setSettings({ ...settings, ...newSetting })
     return false
   }
 
@@ -71,7 +73,7 @@ export default function Home() {
 
         <form onSubmit={addStock}>
           <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
-          <button type="button" onClick={toggleSetting} class="btn btn-outline-secondary" >Toggle setting</button>
+          <button type="button" onClick={() => toggleSetting("Earnings Date")} class="btn btn-outline-secondary" >Toggle setting</button>
           <div class="input-group-append">
             <button type="submit" class="btn btn-outline-secondary" >Add Stock</button>
           </div>
