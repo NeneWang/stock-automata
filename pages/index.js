@@ -63,11 +63,11 @@ export default function Home() {
         // console.log(data["stocks"])
         setTableTitle(data["name"])
         let formattedStockInformation = [];
-        data["stockData"].forEach(stockData =>  {
+        data["stockData"].forEach(stockData => {
           let stockObject = Object()
           let stockDataObject = JSON.parse(stockData["data"]);
-          stockObject[stockData["symbol"]] = {...stockData, ...stockDataObject};
-          
+          stockObject[stockData["symbol"]] = { ...stockData, ...stockDataObject };
+
           formattedStockInformation.push(stockObject)
         })
         setStocks(formattedStockInformation)
@@ -207,36 +207,33 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Stock Automata
-        </h1>
+      <h1 className={styles.title}>
+        Stock Automata
+      </h1>
 
-        <p className={styles.description}>
-          {tableTitle}
-        </p>
-        <form onSubmit={formSubmitHandle}>
+      <p className={styles.description}>
+        {tableTitle}
+      </p>
+      <form onSubmit={formSubmitHandle}>
 
-          <Snackbar
-            open={open}
-            autoHideDuration={6000}
-            onClose={handleClose}
-            message={popMessage}
-            action={action}
-          />
+        <Snackbar
+          open={open}
+          autoHideDuration={6000}
+          onClose={handleClose}
+          message={popMessage}
+          action={action}
+        />
 
-          <SelectTableToLoad tables={tablesData} onSelect={onTableSelected} />
-          <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
-          {
-            settings && Object.keys(settings).map(setting =>
+        <SelectTableToLoad tables={tablesData} onSelect={onTableSelected} />
+        <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
+        {
+          settings && Object.keys(settings).map(setting =>
 
-              <SettingToggler settings={settings} setting={setting} toggleSetting={toggleSetting} />
+            <SettingToggler settings={settings} setting={setting} toggleSetting={toggleSetting} />
 
-            )
-          }
-        </form>
-      </main>
-
+          )
+        }
+      </form>
       <CSVLink className='btn btn-outline-primary' data={getCsvPreparedStocksData()}>Download as CSV</CSVLink>
       {/* <Button onClick={getCsvPreparedStocksData} >Get CSV</Button> */}
 
