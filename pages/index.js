@@ -10,9 +10,12 @@ import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
+import SelectTableToLoad from '../components/SelectTableToLoad'
 
 
-export default function Home() {
+
+export default function Home({ saveTableData }) {
+  console.log(saveTableData)
 
   const [stocks, setStocks] = useState([]);
   const [open, setOpen] = React.useState(false);
@@ -175,6 +178,8 @@ export default function Home() {
             message={popMessage}
             action={action}
           />
+
+          <SelectTableToLoad tables={saveTableData} />
           <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
           {
             settings && Object.keys(settings).map(setting =>
@@ -183,10 +188,6 @@ export default function Home() {
 
             )
           }
-          {/* 
-          <div class="input-group-append">
-            <button type="submit" class="btn btn-outline-secondary" >Add Stock</button>
-          </div> */}
         </form>
       </main>
 
@@ -205,4 +206,15 @@ export default function Home() {
       </footer>
     </div>
   )
+}
+
+
+export async function getStaticProps() {
+  const res = await fetch('http://127.0.0.1:8000/api/stock/save/getids')
+  const saveTableData = await res.json()
+  return {
+    props: {
+      saveTableData,
+    },
+  }
 }
