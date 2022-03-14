@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react'
 import StockTable from '../components/StockTable'
 import SettingToggler from '../components/SettingToggler'
 import Button from '@mui/material/Button';
+import { CSVLink, CSVDownload } from "react-csv";
 import Snackbar from '@mui/material/Snackbar';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
@@ -29,6 +30,43 @@ export default function Home() {
 
     setOpen(false);
   };
+
+  const getCsvPreparedStocksData = () => {
+    // Preepare the csv for this.
+    // Get the settings first
+
+    let namesrow = ["Symbol"], dataRows = []
+    {
+      settings && Object.keys(settings).map((setting) => {
+        if (settings[setting] == true) {
+          namesrow.push(setting)
+        }
+      })
+    }
+
+    {
+      stocks && Object.values(stocks).map(stock => {
+        const stockData = Object.values(stock)[0];
+        let newRow = [stockData["symbol"]]
+        // For each row of the data
+        {
+          settings && Object.keys(settings).map(
+            // console.log(setting)
+            setting => {
+              // return <th scope="col">{settings[setting] &&
+              //   <td>{stockData[setting]}</td>}</th>
+
+              if (settings[setting]) newRow.push(stockData[setting])
+            }
+          )
+        }
+
+        dataRows.push(newRow)
+      })
+    }
+    console.log([namesrow, ...dataRows]);
+    return [namesrow, ...dataRows]
+  }
 
   // const inputChange = 
 
@@ -58,12 +96,19 @@ export default function Home() {
     return false
   }
 
+  const csvData = [
+    ["firstname", "lastname", "email"],
+    ["Ahmed", "Tomi", "ah@smthing.co.com"],
+    ["Raed", "Labes", "rl@smthing.co.com"],
+    ["Yezzi", "Min l3b", "ymin@cocococo.com"]
+  ];
+
   function addStock(events) {
     event.preventDefault()
 
 
     const symbol = events.target.symbol.value.toUpperCase();
-    
+
     events.target.reset();
 
 
@@ -138,15 +183,17 @@ export default function Home() {
 
             )
           }
-{/* 
+          {/* 
           <div class="input-group-append">
             <button type="submit" class="btn btn-outline-secondary" >Add Stock</button>
           </div> */}
         </form>
-        <StockTable stocks={stocks} settings={settings} />
       </main>
 
+      <CSVLink className='btn btn-outline-primary' data={getCsvPreparedStocksData()}>Download as CSV</CSVLink>
+      {/* <Button onClick={getCsvPreparedStocksData} >Get CSV</Button> */}
 
+      <StockTable stocks={stocks} settings={settings} />
       <footer className={styles.footer}>
         <a
           href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
