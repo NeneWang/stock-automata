@@ -73,7 +73,14 @@ export default function Home() {
 
         <form onSubmit={addStock}>
           <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
-          <SettingToggler setting={"Days range"} toggleSetting={toggleSetting}/>
+          {
+            settings && Object.keys(settings).map(setting =>
+
+              <SettingToggler settings={settings} setting={setting} toggleSetting={toggleSetting} />
+
+            )
+          }
+
           <div class="input-group-append">
             <button type="submit" class="btn btn-outline-secondary" >Add Stock</button>
           </div>
