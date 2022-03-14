@@ -37,7 +37,6 @@ export default function Home() {
   }
 
   function addStock(events) {
-    console.log("add stock pressedn???")
     event.preventDefault()
 
 
@@ -49,6 +48,19 @@ export default function Home() {
 
     setStocks([...stocks, newStockInfo])
 
+    fetch(`http://127.0.0.1:8000/api/stock/smartget/stocksymbol/${symbol}`).then((res) => res.json()).then((data) => {
+
+      if (data["stock_stat"] == "FALSE") {
+        console.log("hmmm... I don't think that symbol name is correct")
+      }
+      if (data["stock_stat"] == "RESEARCHING") {
+        console.log("Stock under research, it will be available next iteration")
+      }
+      if (data["stock_stat"] == "TRUE") {
+
+        console.log(data[0])
+      }
+    })
   }
 
 

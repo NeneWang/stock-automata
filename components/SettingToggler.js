@@ -3,7 +3,6 @@
 import React from 'React';
 
 export default function SettingToggler({ settings, setting, toggleSetting }) {
-    console.log(settings)
     const color = settings[setting]?"secondary":"danger"
     return (
         <>
