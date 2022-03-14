@@ -4,10 +4,11 @@ export default function StockTable({ stocks }) {
     console.log(stocks)
     return (
         <>
-            {stocks && stocks.map(stock => {
+            {stocks && Object.values(stocks).map(stock => {
+                const stockData = Object.values(stock)[0];
                 return <tr>
-                    <th scope="row">2</th>
-                    <td>Jacob</td>
+                    <th scope="row">{stockData.symbol}</th>
+                    <td>{stockData["Market Cap"]}</td>
                 </tr>
             })}
 
