@@ -70,9 +70,11 @@ export default function Home() {
     fetch(`http://127.0.0.1:8000/api/stock/smartget/stocksymbol/${symbol}`).then((res) => res.json()).then((data) => {
 
       if (data["stock_stat"] == "FALSE") {
+        openSnackBar(`hmmm... ${symbol} doesn't exists in our records, is the symbol correctly spelled?`)
         console.log("hmmm... I don't think that symbol name is correct")
       }
       if (data["stock_stat"] == "RESEARCHING") {
+        openSnackBar(`${symbol} under research, it will be available between 24 hours`)
         console.log("Stock under research, it will be available next iteration")
       }
       if (data["stock_stat"] == "TRUE") {
