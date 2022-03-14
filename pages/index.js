@@ -4,12 +4,34 @@ import styles from '../styles/Home.module.css'
 import React, { useState, useEffect } from 'react'
 import StockTable from '../components/StockTable'
 import SettingToggler from '../components/SettingToggler'
+import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 
 
 export default function Home() {
 
   const [stocks, setStocks] = useState([]);
+  const [open, setOpen] = React.useState(false);
+  const [popMessage, setPopMessage] = useState("");
+
+  const openSnackBar = (message) => {
+    setPopMessage(message)
+    setOpen(true);
+  };
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setOpen(false);
+  };
+
+  // const inputChange = 
+
   const [settings, setSettings] = useState(
     {
       "1y Target Est": true,
@@ -40,7 +62,9 @@ export default function Home() {
     event.preventDefault()
 
 
-    const symbol = events.target.symbol.value;
+    const symbol = events.target.symbol.value.toUpperCase();
+    
+    events.target.reset();
 
 
     fetch(`http://127.0.0.1:8000/api/stock/smartget/stocksymbol/${symbol}`).then((res) => res.json()).then((data) => {
@@ -52,7 +76,7 @@ export default function Home() {
         console.log("Stock under research, it will be available next iteration")
       }
       if (data["stock_stat"] == "TRUE") {
-
+        openSnackBar(`${symbol} added`)
         // console.log(
 
         let newInformation = data[0]
@@ -65,7 +89,18 @@ export default function Home() {
     })
   }
 
-
+  const action = (
+    <React.Fragment>
+      <IconButton
+        size="small"
+        aria-label="close"
+        color="inherit"
+        onClick={handleClose}
+      >
+        <CloseIcon fontSize="small" />
+      </IconButton>
+    </React.Fragment>
+  );
 
 
   return (
@@ -84,8 +119,15 @@ export default function Home() {
         <p className={styles.description}>
           Untitled Save
         </p>
-
         <form onSubmit={addStock}>
+
+          <Snackbar
+            open={open}
+            autoHideDuration={6000}
+            onClose={handleClose}
+            message={popMessage}
+            action={action}
+          />
           <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
           {
             settings && Object.keys(settings).map(setting =>
@@ -94,13 +136,14 @@ export default function Home() {
 
             )
           }
-
+{/* 
           <div class="input-group-append">
             <button type="submit" class="btn btn-outline-secondary" >Add Stock</button>
-          </div>
+          </div> */}
         </form>
         <StockTable stocks={stocks} settings={settings} />
       </main>
+
 
       <footer className={styles.footer}>
         <a
