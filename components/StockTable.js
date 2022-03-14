@@ -1,6 +1,8 @@
 import React from 'React';
 
 export default function StockTable({ stocks, settings }) {
+    console.log("this is the stocks information")
+    console.log(stocks)
     return (
         <><table class="table table-hover">
             <thead>

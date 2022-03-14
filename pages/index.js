@@ -62,6 +62,15 @@ export default function Home() {
         setSettings(data["settings"]);
         // console.log(data["stocks"])
         setTableTitle(data["name"])
+        let formattedStockInformation = [];
+        data["stockData"].forEach(stockData =>  {
+          let stockObject = Object()
+          let stockDataObject = JSON.parse(stockData["data"]);
+          stockObject[stockData["symbol"]] = {...stockData, ...stockDataObject};
+          
+          formattedStockInformation.push(stockObject)
+        })
+        setStocks(formattedStockInformation)
         // loop for each and add the stocks and add them
         // data["stocks"].forEach(stockName => {
         //   addStock(stockName)
