@@ -3,6 +3,7 @@ import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import React, { useState, useEffect } from 'react'
 import StockTable from '../components/StockTable'
+import SettingToggler from '../components/SettingToggler'
 
 
 
@@ -29,9 +30,8 @@ export default function Home() {
 
 
   function toggleSetting(settingName) {
-    console.log(settingName)
     let newSetting = Object()
-    newSetting[settingName] = !settings[settingName] 
+    newSetting[settingName] = !settings[settingName]
     setSettings({ ...settings, ...newSetting })
     return false
   }
@@ -73,7 +73,7 @@ export default function Home() {
 
         <form onSubmit={addStock}>
           <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
-          <button type="button" onClick={() => toggleSetting("Earnings Date")} class="btn btn-outline-secondary" >Toggle setting</button>
+          <SettingToggler setting={"Days range"} toggleSetting={toggleSetting}/>
           <div class="input-group-append">
             <button type="submit" class="btn btn-outline-secondary" >Add Stock</button>
           </div>
