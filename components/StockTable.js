@@ -21,7 +21,13 @@ export default function StockTable({ stocks, settings }) {
                     const stockData = Object.values(stock)[0];
                     return <tr>
                         <th scope="row">{stockData.symbol}</th>
-                        <td>{stockData["Market Cap"]}</td>
+                        {settings && Object.keys(settings).map(
+                            // console.log(setting)
+                            setting => {
+                                return <th scope="col">{settings[setting] &&
+                                    <td>{stockData[setting]}</td>}</th>
+                            }
+                        )}
                     </tr>
                 })}
             </tbody>
