@@ -26,6 +26,17 @@ export default function Home({ saveTableData }) {
     setOpen(true);
   };
 
+  const onTableSelected = (event) => {
+    let tableSelectedID = event.target.value
+    if (tableSelectedID > 0) {
+      fetch(`http://127.0.0.1:8000/api/stock/save/load/${tableSelectedID}`).then((res) => res.json()).then((data) => {
+        console.log(data)
+      })
+    }
+
+
+  }
+
   const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
@@ -71,7 +82,7 @@ export default function Home({ saveTableData }) {
     return [namesrow, ...dataRows]
   }
 
-  // const inputChange = 
+
 
   const [settings, setSettings] = useState(
     {
@@ -179,7 +190,7 @@ export default function Home({ saveTableData }) {
             action={action}
           />
 
-          <SelectTableToLoad tables={saveTableData} />
+          <SelectTableToLoad tables={saveTableData} onSelect={onTableSelected} />
           <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
           {
             settings && Object.keys(settings).map(setting =>
