@@ -1,10 +1,8 @@
 import Head from 'next/head'
-import Image from 'next/image'
 import styles from '../styles/Home.module.css'
 import React, { useState, useEffect } from 'react'
 import StockTable from '../components/StockTable'
 import SettingToggler from '../components/SettingToggler'
-import Button from '@mui/material/Button';
 import { CSVLink } from "react-csv";
 import Snackbar from '@mui/material/Snackbar';
 import Modal from '@mui/material/Modal';
@@ -17,13 +15,10 @@ import SelectTableToLoad from '../components/SelectTableToLoad'
 
 
 export default function Home() {
-
-
-
-
   const [stocks, setStocks] = useState([]);
   const [openSnack, setOpenSnack] = React.useState(false);
   const [popMessage, setPopMessage] = useState("");
+  const [tableID, setTableID] = useState(-99);
   const [tableTitle, setTableTitle] = useState("Untitled")
   const [tablesData, setTablesData] = useState([])
   const [settings, setSettings] = useState(
@@ -72,12 +67,13 @@ export default function Home() {
   }
   const onTableSelected = (event) => {
     let tableSelectedID = event.target.value
+    setTableID(tableSelectedID)
+
     if (tableSelectedID > 0) {
       fetch(`http://127.0.0.1:8000/api/stock/save/load/${tableSelectedID}`).then((res) => res.json()).then((data) => {
-        // console.log(data)
+
         setSettings(data["settings"]);
-        // console.log(data["stocks"])
-        setTableTitle(data["name"])
+        setTableTitle(data["name"]);
         let formattedStockInformation = [];
         data["stockData"].forEach(stockData => {
           let stockObject = Object()
@@ -88,10 +84,9 @@ export default function Home() {
         })
         setStocks(formattedStockInformation)
       })
-
+    }else{
+      setTableID(-99)
     }
-
-
   }
 
   const handleSnackClose = (event, reason) => {
@@ -168,6 +163,34 @@ export default function Home() {
 
   }
 
+  function saveUpdateForm() {
+
+    let requestObject = {}
+
+    let stockList = [];
+
+    Object.values(stocks).forEach(stock => {
+      stockList.push(Object.values(stock)[0].symbol);
+    })
+
+    requestObject["stocks"] = stockList;
+    requestObject["settings"] = settings;
+    requestObject["id"] = tableID;
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestObject)
+    };
+
+    console.log(requestObject)
+    console.log(tablesData)
+
+    fetch("http://127.0.0.1:8000/api/stock/save/save", requestOptions)
+
+
+  }
+
   function saveFormSubmitHandle(events) {
     events.preventDefault()
     const saveName = events.target.savename.value;
@@ -177,16 +200,12 @@ export default function Home() {
     requestObject["settings"] = settings;
 
     let stockList = [];
-    console.log("just print some stocks")
-    console.log(stocks)
 
     Object.values(stocks).forEach(stock => {
       stockList.push(Object.values(stock)[0].symbol);
     })
 
     requestObject["stocks"] = stockList;
-    // console.log("Prevent and sends stuff")
-    console.log(requestObject)
 
     const requestOptions = {
       method: 'POST',
@@ -293,8 +312,8 @@ export default function Home() {
           </form>
         </Box>
       </Modal>
-      <button className='btn btn-outline-primary' onClick={handleOpenModalSave} > Save </button>
-      <button className='btn btn-outline-primary'> Save as </button>
+      <button className='btn btn-outline-primary' onClick={saveUpdateForm}  > Save </button>
+      <button className='btn btn-outline-primary' onClick={handleOpenModalSave}> Save as </button>
 
 
       <StockTable stocks={stocks} settings={settings} />
