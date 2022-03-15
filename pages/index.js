@@ -7,6 +7,8 @@ import SettingToggler from '../components/SettingToggler'
 import Button from '@mui/material/Button';
 import { CSVLink } from "react-csv";
 import Snackbar from '@mui/material/Snackbar';
+import Modal from '@mui/material/Modal';
+import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 
@@ -20,7 +22,7 @@ export default function Home() {
 
 
   const [stocks, setStocks] = useState([]);
-  const [open, setOpen] = React.useState(false);
+  const [openSnack, setOpenSnack] = React.useState(false);
   const [popMessage, setPopMessage] = useState("");
   const [tableTitle, setTableTitle] = useState("Untitled")
   const [tablesData, setTablesData] = useState([])
@@ -41,11 +43,25 @@ export default function Home() {
       "Volume": true
     }
   );
+  const [openModalSave, setOpenModalSave] = React.useState(false);
+  const handleOpenModalSave = () => setOpenModalSave(true);
+  const handleCloseModalSave = () => setOpenModalSave(false);
 
+
+  const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    boxShadow: 24,
+    p: 4,
+  };
 
   const openSnackBar = (message) => {
     setPopMessage(message)
-    setOpen(true);
+    setOpenSnack(true);
   };
 
 
@@ -71,13 +87,6 @@ export default function Home() {
           formattedStockInformation.push(stockObject)
         })
         setStocks(formattedStockInformation)
-        // loop for each and add the stocks and add them
-        // data["stocks"].forEach(stockName => {
-        //   addStock(stockName)
-        //   setTimeout(() => { console.log("ok")}, 2000);
-
-        //   // delay(100)
-        // })
       })
 
     }
@@ -85,12 +94,12 @@ export default function Home() {
 
   }
 
-  const handleClose = (event, reason) => {
+  const handleSnackClose = (event, reason) => {
     if (reason === 'clickaway') {
       return;
     }
 
-    setOpen(false);
+    setOpenSnack(false);
   };
 
   const getCsvPreparedStocksData = () => {
@@ -148,7 +157,7 @@ export default function Home() {
   ];
 
   function formSubmitHandle(events) {
-    event.preventDefault()
+    events.preventDefault()
 
 
     const symbol = events.target.symbol.value.toUpperCase();
@@ -156,6 +165,40 @@ export default function Home() {
     events.target.reset();
     addStock(symbol)
 
+
+  }
+
+  function saveFormSubmitHandle(events) {
+    events.preventDefault()
+    const saveName = events.target.savename.value;
+
+    let requestObject = {}
+    requestObject["name"] = saveName;
+    requestObject["settings"] = settings;
+
+    let stockList = [];
+    console.log("just print some stocks")
+    console.log(stocks)
+
+    Object.values(stocks).forEach(stock => {
+      stockList.push(Object.values(stock)[0].symbol);
+    })
+
+    requestObject["stocks"] = stockList;
+    // console.log("Prevent and sends stuff")
+    console.log(requestObject)
+
+    const requestOptions = {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestObject)
+    };
+
+    fetch("http://127.0.0.1:8000/api/stock/save/savenew", requestOptions)
+
+    // console.log(events)
+    events.target.reset();
+    handleCloseModalSave()
 
   }
 
@@ -188,7 +231,7 @@ export default function Home() {
         size="small"
         aria-label="close"
         color="inherit"
-        onClick={handleClose}
+        onClick={handleSnackClose}
       >
         <CloseIcon fontSize="small" />
       </IconButton>
@@ -217,9 +260,9 @@ export default function Home() {
       <form onSubmit={formSubmitHandle}>
 
         <Snackbar
-          open={open}
+          open={openSnack}
           autoHideDuration={6000}
-          onClose={handleClose}
+          onClose={handleSnackClose}
           message={popMessage}
           action={action}
         />
@@ -236,6 +279,23 @@ export default function Home() {
       </form>
       <CSVLink className='btn btn-outline-primary' data={getCsvPreparedStocksData()}>Download as CSV</CSVLink>
       {/* <Button onClick={getCsvPreparedStocksData} >Get CSV</Button> */}
+      <Modal
+        open={openModalSave}
+        onClose={handleCloseModalSave}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={style} >
+          <form onSubmit={saveFormSubmitHandle}>
+            <h3>Save as</h3>
+            <input type="text" class="form-control" name="savename" placeholder='untitled' />
+            <button className='btn' type="submit">Save</button>
+          </form>
+        </Box>
+      </Modal>
+      <button className='btn btn-outline-primary' onClick={handleOpenModalSave} > Save </button>
+      <button className='btn btn-outline-primary'> Save as </button>
+
 
       <StockTable stocks={stocks} settings={settings} />
       <footer className={styles.footer}>
