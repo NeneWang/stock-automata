@@ -12,7 +12,6 @@ makefile
 
 # next.js
 /.next/
-/out/
 
 # production
 /build
