@@ -61,7 +61,7 @@ export default function Home() {
 
 
   const runInitState = () => {
-    fetch('http://127.0.0.1:8000/api/stock/save/getids').then((res) => res.json()).then((data) => {
+    fetch('https://codex-chan.wangnelson.xyz/public/api/stock/save/getids').then((res) => res.json()).then((data) => {
       setTablesData([...data]);
     })
   }
@@ -70,7 +70,7 @@ export default function Home() {
     setTableID(tableSelectedID)
 
     if (tableSelectedID > 0) {
-      fetch(`http://127.0.0.1:8000/api/stock/save/load/${tableSelectedID}`).then((res) => res.json()).then((data) => {
+      fetch(`https://codex-chan.wangnelson.xyz/public/api/stock/save/load/${tableSelectedID}`).then((res) => res.json()).then((data) => {
 
         setSettings(data["settings"]);
         setTableTitle(data["name"]);
@@ -186,7 +186,7 @@ export default function Home() {
     console.log(requestObject)
     console.log(tablesData)
 
-    fetch("http://127.0.0.1:8000/api/stock/save/save", requestOptions)
+    fetch("https://codex-chan.wangnelson.xyz/public/api/stock/save/save", requestOptions)
 
 
   }
@@ -213,7 +213,7 @@ export default function Home() {
       body: JSON.stringify(requestObject)
     };
 
-    fetch("http://127.0.0.1:8000/api/stock/save/savenew", requestOptions)
+    fetch("https://codex-chan.wangnelson.xyz/public/api/stock/save/savenew", requestOptions)
 
     // console.log(events)
     events.target.reset();
@@ -222,7 +222,7 @@ export default function Home() {
   }
 
   function addStock(symbol) {
-    fetch(`http://127.0.0.1:8000/api/stock/smartget/stocksymbol/${symbol}`).then((res) => res.json()).then((data) => {
+    fetch(`https://codex-chan.wangnelson.xyz/public/api/stock/smartget/stocksymbol/${symbol}`).then((res) => res.json()).then((data) => {
 
       if (data["stock_stat"] == "FALSE") {
         openSnackBar(`hmmm... ${symbol} doesn't exists in our records, is the symbol correctly spelled?`)
