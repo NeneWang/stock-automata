@@ -11,7 +11,7 @@ export default function StockTable({ stocks, settings }) {
                     {settings && Object.keys(settings).map(
                         // console.log(setting)
                         setting => {
-                            return <th key={settings[setting]} scope="col">{settings[setting] && setting}</th>
+                            return <th key={setting+"keyforTHHead"} scope="col">{settings[setting] && setting}</th>
                         }
                     )}
                 </tr>
@@ -25,7 +25,7 @@ export default function StockTable({ stocks, settings }) {
                         {settings && Object.keys(settings).map(
                             // console.log(setting)
                             setting => {
-                                return <th key={stockData.symbol} scope="col">
+                                return <th key={stockData.symbol+"keyforsymbol"+stock} scope="col">
                                     {settings[setting] &&
                                     <td key={settings[setting]+stockData.symbol}>{stockData[setting]}</td>}</th>
                             }
