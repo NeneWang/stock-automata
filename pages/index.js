@@ -287,11 +287,11 @@ export default function Home() {
         />
 
         <SelectTableToLoad tables={tablesData} onSelect={onTableSelected} />
-        <input type="text" name='symbol' class="form-control" placeholder="Enter Stock Symbol" />
+        <input type="text" name='symbol' className="form-control" placeholder="Enter Stock Symbol" />
         {
           settings && Object.keys(settings).map(setting =>
 
-            <SettingToggler settings={settings} setting={setting} toggleSetting={toggleSetting} />
+            <SettingToggler key={setting} settings={settings} setting={setting} toggleSetting={toggleSetting} />
 
           )
         }
@@ -307,7 +307,7 @@ export default function Home() {
         <Box sx={style} >
           <form onSubmit={saveFormSubmitHandle}>
             <h3>Save as</h3>
-            <input type="text" class="form-control" name="savename" placeholder='untitled' />
+            <input type="text" className="form-control" name="savename" placeholder='untitled' />
             <button className='btn' type="submit">Save</button>
           </form>
         </Box>

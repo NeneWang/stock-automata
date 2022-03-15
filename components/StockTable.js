@@ -4,14 +4,14 @@ export default function StockTable({ stocks, settings }) {
     console.log("this is the stocks information")
     console.log(stocks)
     return (
-        <><table class="table table-hover">
+        <><table className="table table-hover">
             <thead>
                 <tr>
                     <th scope="col">Symbol</th>
                     {settings && Object.keys(settings).map(
                         // console.log(setting)
                         setting => {
-                            return <th scope="col">{settings[setting] && setting}</th>
+                            return <th key={settings[setting]} scope="col">{settings[setting] && setting}</th>
                         }
                     )}
                 </tr>
@@ -20,13 +20,14 @@ export default function StockTable({ stocks, settings }) {
 
                 {stocks && Object.values(stocks).map(stock => {
                     const stockData = Object.values(stock)[0];
-                    return <tr>
+                    return <tr key={stock} >
                         <th scope="row">{stockData.symbol}</th>
                         {settings && Object.keys(settings).map(
                             // console.log(setting)
                             setting => {
-                                return <th scope="col">{settings[setting] &&
-                                    <td>{stockData[setting]}</td>}</th>
+                                return <th key={stockData.symbol} scope="col">
+                                    {settings[setting] &&
+                                    <td key={settings[setting]+stockData.symbol}>{stockData[setting]}</td>}</th>
                             }
                         )}
                     </tr>
